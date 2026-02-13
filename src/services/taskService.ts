@@ -28,7 +28,14 @@ export class TaskService {
     targetDate?: Date,
     status?: TaskStatus
   ) {
-    const where: any = { userId };
+    const where: {
+      userId: string;
+      targetDate?: {
+        gte: Date;
+        lte: Date;
+      };
+      status?: TaskStatus;
+    } = { userId };
 
     if (targetDate) {
       // Get tasks for specific date (beginning to end of day)
