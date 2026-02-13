@@ -2,6 +2,8 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
+import { authenticate, AuthRequest } from './middleware/auth';
+
 // Load environment variables
 dotenv.config();
 
@@ -19,6 +21,15 @@ app.get('/health', (req: Request, res: Response) => {
     status: 'success',
     message: 'Tomorrow API is running! 🚀',
     timestamp: new Date().toISOString()
+  });
+});
+
+// Protected route - test authentication route
+app.get('/api/me', authenticate, async (req: AuthRequest, res: Response) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Authentication successful!',
+    userId: req.userId
   });
 });
 
