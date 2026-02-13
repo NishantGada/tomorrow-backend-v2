@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import { authenticate, AuthRequest } from './middleware/auth';
 import taskRoutes from './routes/taskRoutes';
+import prisma from './config/database';
 
 // Load environment variables
 dotenv.config();
@@ -25,13 +26,34 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-// Protected route - test authentication route
+// Protected route - Get user profile
 app.get('/api/me', authenticate, async (req: AuthRequest, res: Response) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Authentication successful!',
-    userId: req.userId
-  });
+  try {
+    const userId = req.userId!;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        profilePictureUrl: true,
+        currentStreak: true,
+        longestStreak: true,
+        totalTasksCompleted: true,
+      },
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get profile',
+    });
+  }
 });
 
 // Task routes

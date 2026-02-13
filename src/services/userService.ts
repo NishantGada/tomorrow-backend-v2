@@ -27,6 +27,35 @@ export class UserService {
       where: { id: userId },
     });
   }
+
+  // Increment total tasks completed
+  async incrementTasksCompleted(userId: string) {
+    return await prisma.user.update({
+      where: { id: userId },
+      data: {
+        totalTasksCompleted: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
+  // Decrement total tasks completed
+  async decrementTasksCompleted(userId: string) {
+    const user = await this.getUserById(userId);
+    if (!user || user.totalTasksCompleted === 0) {
+      return user;
+    }
+
+    return await prisma.user.update({
+      where: { id: userId },
+      data: {
+        totalTasksCompleted: {
+          decrement: 1,
+        },
+      },
+    });
+  }
 }
 
 export default new UserService();

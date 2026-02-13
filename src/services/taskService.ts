@@ -1,6 +1,8 @@
 import prisma from '../config/database';
 import { TaskCategory, TaskStatus } from '@prisma/client';
 
+import userService from './userService';
+
 export class TaskService {
   // Create a new task
   async createTask(
@@ -41,7 +43,7 @@ export class TaskService {
       // Get tasks for specific date (beginning to end of day)
       const startOfDay = new Date(targetDate);
       startOfDay.setHours(0, 0, 0, 0);
-      
+
       const endOfDay = new Date(targetDate);
       endOfDay.setHours(23, 59, 59, 999);
 
@@ -106,14 +108,23 @@ export class TaskService {
 
     const isCompleting = task.status !== TaskStatus.COMPLETED;
 
-    return await prisma.task.update({
+    // Update task status
+    const updatedTask = await prisma.task.update({
       where: { id: taskId },
       data: {
         status: isCompleting ? TaskStatus.COMPLETED : TaskStatus.ACTIVE,
         completedAt: isCompleting ? new Date() : null,
-        taskStreak: isCompleting ? task.taskStreak + 1 : task.taskStreak,
       },
     });
+
+    // Update user's total tasks completed counter
+    if (isCompleting) {
+      await userService.incrementTasksCompleted(userId);
+    } else {
+      await userService.decrementTasksCompleted(userId);
+    }
+
+    return updatedTask;
   }
 
   // Archive a task
