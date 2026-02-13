@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { authenticate, AuthRequest } from './middleware/auth';
 import taskRoutes from './routes/taskRoutes';
 import prisma from './config/database';
+import summaryRoutes from './routes/summaryRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,9 @@ app.get('/api/me', authenticate, async (req: AuthRequest, res: Response) => {
 
 // Task routes
 app.use('/api/tasks', taskRoutes);
+
+// Summary routes
+app.use('/api/summary', summaryRoutes);
 
 // Start server
 app.listen(PORT, () => {
