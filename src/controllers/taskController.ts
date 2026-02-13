@@ -268,6 +268,27 @@ export class TaskController {
       });
     }
   }
+
+  // Get archived tasks
+  async getArchivedTasks(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.userId!;
+
+      const tasks = await taskService.getTasks(userId, undefined, TaskStatus.ARCHIVED);
+
+      res.status(200).json({
+        status: 'success',
+        count: tasks.length,
+        data: tasks,
+      });
+    } catch (error) {
+      console.error('Get archived tasks error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to retrieve archived tasks',
+      });
+    }
+  }
 }
 
 export default new TaskController();
