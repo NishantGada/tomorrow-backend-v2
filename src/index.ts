@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import { authenticate, AuthRequest } from './middleware/auth';
+import taskRoutes from './routes/taskRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,9 @@ app.get('/api/me', authenticate, async (req: AuthRequest, res: Response) => {
     userId: req.userId
   });
 });
+
+// Task routes
+app.use('/api/tasks', taskRoutes);
 
 // Start server
 app.listen(PORT, () => {

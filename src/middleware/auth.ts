@@ -3,6 +3,7 @@ dotenv.config();
 
 import { Request, Response, NextFunction } from 'express';
 import { createClient } from '@supabase/supabase-js';
+import userService from '../services/userService';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -41,6 +42,13 @@ export const authenticate = async (
       });
       return;
     }
+
+    // Get or create user in our database
+    await userService.getOrCreateUser(
+      user.id,
+      user.email!,
+      user.user_metadata?.name || user.email?.split('@')[0]
+    );
 
     // Attach userId to request
     req.userId = user.id;
