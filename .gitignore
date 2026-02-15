@@ -27,3 +27,5 @@ Thumbs.db
 # Prisma
 prisma/migrations/
 /src/generated/prisma
+
+notes
